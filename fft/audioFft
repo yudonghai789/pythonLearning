@@ -1,0 +1,235 @@
+#-*- coding: utf-8 -*-
+
+from scipy.io import wavfile
+from scipy.fftpack import fft,ifft
+import scipy.io
+import matplotlib.pyplot as plt
+import numpy as np
+import pygame.mixer
+import sys
+
+
+
+def ReadAudio(fileURL):
+    # Get the filename for an example .wav file from the tests/data directory.
+    samplerate, data = wavfile.read(fileURL)
+    channels = data.shape[1]  # 声道数
+    length = data.shape[0] / samplerate  # 时长
+    time = np.linspace(0., length, data.shape[0])
+
+    print(f"number of channels = {channels}")  # 声道数number of channels = 2
+    print("Sampling Frequency is", samplerate)  # 采样率
+    print(f"length = {length}s")  # 时长 length = 0.01s
+
+    return data, time, samplerate, length, channels
+
+
+def SaveTwoChannelAudioToTxt(data, fileName):
+    b = np.savetxt("audio\\" + fileName + ".txt", data)  # a为写入文件的变量
+    b = np.savetxt("audio\\" + fileName + "Leftchannel.txt", data[:, 0])  # a为写入文件的变量
+    b = np.savetxt("audio\\" + fileName + "Rightchannel.txt", data[:, 0])  # a为写入文件的变量
+
+
+def SaveOneChannelAudioToTxt(data, fileName):
+    b = np.savetxt("audio\\" + fileName + ".txt", data)  # a为写入文件的变量
+
+def SaveAudioFile(data, samplerate, fileURL):
+    wavfile.write(fileURL, samplerate, data)  # a为写入文件的变量
+
+
+
+def ReadTxt(fileURL):
+    y = np.loadtxt(fileURL)
+    x = len(y)
+    return x, y
+
+
+def AudioPlay(fileURL):
+    # 播放音频
+    pygame.init()
+    pygame.mixer.init()
+    pygame.mixer.music.load(fileURL)
+    pygame.mixer.music.play()
+
+    pygame.display.set_mode([300, 300])
+    while 1:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                sys.exit()
+
+
+
+
+def FftProc(y, x):
+    yy=fft(y)                     #快速傅里叶变换
+    yreal = yy.real               # 获取实数部分
+    yimag = yy.imag               # 获取虚数部分
+
+    yf=abs(fft(y))                # 取绝对值
+    yf1=abs(fft(y))/len(x)           #归一化处理
+    yf2 = yf1[range(int(len(x)/2))]  #由于对称性，只取一半区间
+
+    xf = np.arange(len(y))        # 频率
+    xf1 = xf
+    xf2 = xf[range(int(len(x)/2))]  #取一半区间
+
+    return xf, yf, xf1, yf1, xf2, yf2
+
+
+
+def Draw(x, y, xf, yf, xf1, yf1, xf2, yf2):
+    plt.ion()
+
+    plt.figure()
+    plt.subplot(1,1,1)
+    plt.plot(x, y)
+    # plt.plot(x[0:5000],y[0:5000])
+    plt.title('时域波形')
+
+    plt.figure()
+    plt.subplot(2,2,1)
+    plt.plot(xf,yf,'r')
+    plt.title('原始FFT模值, #混合波的FFT（双边频率范围）',fontsize=7,color='#7A378B')  #注意这里的颜色可以查询颜色代码表
+
+    plt.subplot(2,2,2)
+    plt.plot(xf1,yf1,'g')
+    plt.title('原始FFT归一化后的模值, 混合波的FFT（归一化）',fontsize=9,color='r')
+
+    plt.subplot(2,2,3)
+    plt.plot(xf2,yf2,'b')
+    plt.title('对称，只取一半区间',fontsize=10,color='#F08080')
+
+    plt.subplot(2,2,4)
+    plt.plot(xf2[0:2000],yf2[0:2000],'g')
+    plt.title('只取一半区间部分',fontsize=9,color='r')
+
+
+
+def demo2():
+    x, y = ReadTxt("audio\\261Hz.txt")
+
+def demo3():
+    x, y = ReadTxt("audio\\myVoiceLeftchannel.txt")
+
+
+def demo0():
+    data, time, samplerate, length, channels = ReadAudio("audio\\1.wav")
+    SaveTwoChannelAudioToTxt(data, 'myVoice')
+
+    # Plot the waveform.
+    plt.subplot(111)
+    plt.plot(time, data[:, 0], label="Left channel")
+    plt.plot(time, data[:, 1], label="Right channel")
+    plt.legend()
+    plt.xlabel("Time [s]")
+    plt.ylabel("Amplitude")
+    plt.title('Original wave')
+
+def demoYudonghai():
+    data, time, samplerate, length, channels = ReadAudio("audio\\yudongai.wav")
+    SaveTwoChannelAudioToTxt(data, 'myVoice')
+
+    start = int(48000 * 0.8)
+    playlong= int(48000 * 1.5)
+    SaveAudioFile(data[start:start + playlong], int(samplerate / 1), 'audio\\output.wav')
+    dataOut, timeOut, samplerateOut, lengthOut, channelsOut = ReadAudio('audio\\output.wav')
+
+    xf, yf, xf1, yf1, xf2, yf2 = FftProc(dataOut[:, 0], timeOut)
+    Draw(timeOut, dataOut, xf, yf, xf1, yf1, xf2, yf2)
+
+    AudioPlay("audio\\output.wav")
+
+def demoQuxueQing():
+    data, time, samplerate, length, channels = ReadAudio("audio\\quxueqing.wav")
+    SaveTwoChannelAudioToTxt(data, 'myVoice')
+
+    start = int(48000 * 0.7)
+    playlong= int(48000 * 1.6)
+    SaveAudioFile(data[start:start + playlong], int(samplerate / 1), 'audio\\output.wav')
+    dataOut, timeOut, samplerateOut, lengthOut, channelsOut = ReadAudio('audio\\output.wav')
+
+    xf, yf, xf1, yf1, xf2, yf2 = FftProc(dataOut[:, 0], timeOut)
+    Draw(timeOut, dataOut, xf, yf, xf1, yf1, xf2, yf2)
+
+    AudioPlay("audio\\output.wav")
+
+def demoGuolv():
+    data, time, samplerate, length, channels = ReadAudio("audio\\yudongai.wav")
+
+    start = int(48000 * 0.7)
+    playlong= int(48000 * 1.5)
+    SaveAudioFile(data[start:start + playlong], int(samplerate / 1), 'audio\\output.wav')
+    data, time, samplerate, length, channel = ReadAudio('audio\\output.wav')
+
+    y = data[:, 0]
+    x = time
+    yy=fft(y)                     #快速傅里叶变换
+    yreal = yy.real               # 获取实数部分
+    yimag = yy.imag               # 获取虚数部分
+
+    yf=abs(fft(y))                # 取绝对值
+    yf1=abs(fft(y))/len(x)           #归一化处理
+    yf2 = yf1[range(int(len(x)/2))]  #由于对称性，只取一半区间
+
+    xf = np.arange(len(y))        # 频率
+    xf1 = xf
+    xf2 = xf[range(int(len(x)/2))]  #取一半区间
+
+    # 过滤
+    test_y = yy
+    for i in range(len(yy)):
+        if i >= 500 or i <= 200:
+            test_y[i] = 0
+    test = np.fft.ifft(test_y)  # 对变换后的结果应用ifft函数，应该可以近似地还原初始信号。
+    test_y = abs(test_y)
+
+    SaveAudioFile(test.astype(np.int_), int(samplerate / 1), 'audio\\output.wav')
+
+    plt.ion()
+    plt.figure()
+    plt.subplot(2, 1, 1)
+    plt.plot(x, y, 'r')
+    plt.title('origin', fontsize=7, color='#7A378B')  # 注意这里的颜色可以查询颜色代码表
+
+    plt.subplot(2, 1, 2)
+    plt.plot(xf[0:2000], yf[0:2000], 'r')
+    plt.title('fft', fontsize=7, color='#7A378B')  # 注意这里的颜色可以查询颜色代码表
+
+    plt.figure()
+    plt.subplot(2, 1, 1)
+    plt.plot(x, test, 'g')
+    plt.title('guolv', fontsize=9, color='r')
+
+    plt.subplot(2, 1, 2)
+    plt.plot(xf[0:2000], test_y[0:2000], 'g')
+    plt.title('guolv', fontsize=9, color='r')
+
+
+
+    AudioPlay("audio\\output.wav")
+
+
+def fftTest():
+    #采样点选择1400个，因为设置的信号频率分量最高为600赫兹，根据采样定理知采样频率要大于信号频率2倍，所以这里设置采样频率为1400赫兹（即一秒内有1400个采样点，一样意思的）
+    x=np.linspace(0,1,48000)
+    # #设置需要采样的信号，频率分量有180，390和600
+    #
+    y= (1 - x) * np.sin(2*np.pi*261*x)
+    # y =7*np.sin(2*np.pi*261*x) + 5*np.sin(2*np.pi*600*x)
+    # y=7*np.sin(2*np.pi*180*x) + 2.8*np.sin(2*np.pi*390*x)+5.1*np.sin(2*np.pi*600*x)
+    # y=7*np.sin(2*np.pi*180*x) + 2.8*np.sin(2*np.pi*390*x)+5.1*np.sin(2*np.pi*600*x)
+    # y=7*np.sin(2*np.pi*180*x) + 2.8*np.sin(2*np.pi*390*x)+5.1*np.sin(2*np.pi*600*x)
+    # y=7*np.sin(2*np.pi*261*x) + 2.8*np.sin(2*np.pi*329*x)+5.1*np.sin(2*np.pi*440*x)
+
+    SaveAudioFile(y, 48000, "audio\\sin.wav")
+
+    xf, yf, xf1, yf1, xf2, yf2 = FftProc(y, x)
+    Draw(x, y, xf, yf, xf1, yf1, xf2, yf2)
+    AudioPlay("audio\\sin.wav")
+
+
+if __name__ == '__main__':
+    # demoYudonghai()
+    # demoQuxueQing()
+    demoGuolv()
+    # fftTest()
