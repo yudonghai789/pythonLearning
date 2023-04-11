@@ -101,6 +101,9 @@ mapping_table = {
     (1, 1, 1, 0):  1+3j,
     (1, 1, 1, 1):  1+1j
 }
+
+plt.figure(figsize=(8, 8))
+plt.grid(True)
 for b3 in [0, 1]:
     for b2 in [0, 1]:
         for b1 in [0, 1]:
@@ -108,10 +111,9 @@ for b3 in [0, 1]:
                 B = (b3, b2, b1, b0)
                 Q = mapping_table[B]
                 plt.plot(Q.real, Q.imag, 'bo')
-                plt.text(Q.real, Q.imag+0.2, "".join(str(x)
-                         for x in B), ha='center')
-plt.figure(figsize=(8, 8))
-plt.grid(True)
+                plt.text(Q.real, Q.imag+0.2, "".join(str(x) for x in B), ha='center')
+
+
 plt.xlim((-4, 4))
 plt.ylim((-4, 4))
 plt.xlabel('Real part (I)')
