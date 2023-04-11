@@ -1,0 +1,73 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+
+
+def sinBo():
+    # 生成信号
+    t = np.linspace(0, 1, 1000)
+    f = 10
+    x = np.sin(2 * np.pi * f * t)
+
+    # 进行FFT变换
+    X = np.fft.fft(x)
+
+    # 计算频率轴
+    freq = np.fft.fftfreq(len(x), t[1] - t[0])
+
+    # 绘制原始信号和频谱
+    plt.figure()
+    plt.subplot(121)
+    plt.plot(t, x)
+    plt.xlabel('Time (s)')
+    plt.ylabel('Amplitude')
+    plt.title('Original Signal')
+
+    plt.subplot(122)
+    plt.plot(freq, np.abs(X))
+    plt.xlabel('Frequency (Hz)')
+    plt.ylabel('Magnitude')
+    plt.title('Spectrum')
+
+    plt.show()
+
+
+
+
+def fangbo():
+    # 生成方波函数
+    def square_wave(x, freq):
+        return np.sign(np.sin(2*np.pi*freq*x))
+
+    # 生成采样点
+    t = np.linspace(0, 1, 256)
+
+    # 采样频率为256Hz的方波，频率为10Hz
+    freq = 10
+    f = square_wave(t, freq)
+
+    # 原始方波的时域图像
+    plt.figure(figsize=(12, 6))
+    plt.subplot(211)
+    plt.plot(t, f, 'b-')
+    plt.title('Time Domain of Square Wave')
+    plt.xlabel('Time')
+    plt.ylabel('Amplitude')
+    plt.grid(True)
+
+    # 原始方波的频域图像
+    plt.subplot(212)
+    c = np.fft.fft(f)
+    freqs = np.fft.fftfreq(len(f)) * 256
+    plt.plot(freqs, abs(c), 'r-')
+    plt.title('Frequency Domain of Square Wave')
+    plt.xlabel('Frequency')
+    plt.ylabel('Amplitude')
+    plt.grid(True)
+
+    plt.show()
+
+
+
+if __name__ == '__main__':
+    fangbo()
