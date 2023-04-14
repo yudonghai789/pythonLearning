@@ -1,0 +1,114 @@
+# leetcode 12. 整数转罗马数字 https://leetcode.cn/problems/integer-to-roman/
+
+from typing import List
+import unittest
+
+
+#-----------贪心-----------------------------
+# class Solution:
+#     def intToRoman(self, num: int) -> str:
+#         romanRes = ''
+#
+#         while(num > 0) :
+#             if num >= 1000:
+#                 romanRes += 'M'
+#                 num = num - 1000
+#             elif num >= 900:
+#                 romanRes += 'CM'
+#                 num = num - 900
+#             elif num >= 500:
+#                 romanRes += 'D'
+#                 num = num - 500
+#             elif num >= 400:
+#                 romanRes += 'CD'
+#                 num = num - 400
+#             elif num >= 100:
+#                 romanRes += 'C'
+#                 num = num - 100
+#             elif num >= 90:
+#                 romanRes += 'XC'
+#                 num = num - 90
+#             elif num >= 50:
+#                 romanRes += 'L'
+#                 num = num - 50
+#             elif num >= 40:
+#                 romanRes += 'XL'
+#                 num = num - 40
+#             elif num >= 10:
+#                 romanRes += 'X'
+#                 num = num - 10
+#             elif num >= 9:
+#                 romanRes += 'IX'
+#                 num = num - 9
+#             elif num >= 5:
+#                 romanRes += 'V'
+#                 num = num - 5
+#             elif num >= 4:
+#                 romanRes += 'IV'
+#                 num = num - 4
+#             elif num >= 1:
+#                 romanRes += 'I'
+#                 num = num - 1
+#             else:
+#                 print("error")
+#
+#         return romanRes
+
+
+#-----------贪心 + 哈希-----------------------------
+class Solution:
+    def intToRoman(self, num: int) -> str:
+        # 使用哈希表，按照从大到小顺序排列
+        hashmap = {1000:'M', 900:'CM', 500:'D', 400:'CD', 100:'C', 90:'XC', 50:'L', 40:'XL', 10:'X', 9:'IX', 5:'V', 4:'IV', 1:'I'}
+        res = ''
+        for key in hashmap:
+            if num // key != 0:
+                count = num // key  # 比如输入4000，count 为 4
+                res += hashmap[key] * count
+                num %= key
+        return res
+
+
+# -----------单元测试-----------------------------------
+class TestSolution(unittest.TestCase):
+    def test_3(self):
+        solution = Solution()
+        nums = 3
+        res = Solution.intToRoman(solution, nums)
+        self.assertEqual(res, 'III')
+
+    def test_4(self):
+        solution = Solution()
+        nums = 4
+        res = Solution.intToRoman(solution, nums)
+        self.assertEqual(res, 'IV')
+
+    def test_40(self):
+        solution = Solution()
+        nums = 40
+        res = Solution.intToRoman(solution, nums)
+        self.assertEqual(res, 'XL')
+
+    def test_90(self):
+        solution = Solution()
+        nums = 90
+        res = Solution.intToRoman(solution, nums)
+        self.assertEqual(res, 'XC')
+
+    def test_400(self):
+        solution = Solution()
+        nums = 400
+        res = Solution.intToRoman(solution, nums)
+        self.assertEqual(res, 'CD')
+
+    def test_1994(self):
+        solution = Solution()
+        nums = 1994
+        res = Solution.intToRoman(solution, nums)
+        self.assertEqual(res, 'MCMXCIV')
+
+
+
+
+if __name__ == '__main__':
+    unittest.main()
