@@ -1,0 +1,72 @@
+# leetcode 30. 串联所有单词的子串 https://leetcode.cn/problems/substring-with-concatenation-of-all-words/
+
+from typing import List
+import unittest
+
+#-----------哈希-超时---------------------------
+class Solution:
+    def matchAllWord(self, s: str, wordList: List[str], wordLen: int, start: int, strlen: int) -> bool:
+        while start < strlen and len(wordList) != 0:
+            matchWord = s[start: start + wordLen]
+            if matchWord in wordList:
+                wordList.remove(matchWord)
+                start += wordLen
+            else:
+                break
+
+        if len(wordList) == 0:
+            return True
+        else:
+            return False
+
+    def findSubstring(self, s: str, words: List[str]) -> List[int]:
+        #超时
+        # if len(words) > 1000:
+        #     return []
+        wordLen = len(words[0])
+        strlen = len(s)
+
+        res = []
+        for start in range(0, strlen):
+            if start + len(words) * wordLen > strlen:
+                break
+
+            startword = s[start: start + wordLen]
+            if startword in words:
+                wordList = words.copy()
+                wordList.remove(startword)
+                isAllMatch = self.matchAllWord(s, wordList, wordLen, start + wordLen, strlen)
+                if isAllMatch == True:
+                    res.append(start)
+        return res
+
+
+
+# -----------单元测试-----------------------------------
+class TestSolution(unittest.TestCase):
+    def test_1(self):
+        solution = Solution()
+        s = "barfoothefoobarman"
+        words = ["foo","bar"]
+        res = Solution.findSubstring(solution, s, words)
+        self.assertEqual(res, [0,9])
+
+    def test_2(self):
+        solution = Solution()
+        s = "wordgoodgoodgoodbestword"
+        words = ["word","good","best","word"]
+        res = Solution.findSubstring(solution, s, words)
+        self.assertEqual(res, [])
+
+
+    def test_3(self):
+        solution = Solution()
+        s = "barfoofoobarthefoobarman"
+        words = ["bar","foo","the"]
+        res = Solution.findSubstring(solution, s, words)
+        self.assertEqual(res, [6,9,12])
+
+
+
+if __name__ == '__main__':
+    unittest.main()
