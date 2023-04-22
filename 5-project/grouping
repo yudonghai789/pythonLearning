@@ -1,1 +1,246 @@
 
+import random
+
+
+def GenRandArrGrp(inputNum, groupNum):
+    arrGrpLen = [0] * groupNum
+    arrGrp = [[0] * inputNum for i in range(groupNum)]
+
+    array = []
+    index = 0
+    while index <= inputNum:
+        index = index + 1
+        array.append(index)
+    random.shuffle(array)
+
+    index = 0
+    addGrp = random.randint(0, groupNum - 1)
+    while index < inputNum:
+        arrGrp[addGrp][arrGrpLen[addGrp]] = array[index]
+        arrGrpLen[addGrp] = arrGrpLen[addGrp] + 1
+        index = index + 1
+        addGrp = addGrp + 1
+        addGrp = addGrp % groupNum
+
+    return arrGrpLen, arrGrp
+
+def group_numbers_avg(number, grpNum):
+    # Create a list of numbers from 1 to number
+    numbers = list(range(1, number+1))
+    # Shuffle the list randomly
+    random.shuffle(numbers)
+    # Calculate the size of each group
+    group_size = number // grpNum
+    # Create a list to hold the groups
+    groups = []
+    # Loop through the number of groups
+    for i in range(grpNum):
+        groups.append([])
+
+    index = 0
+    addGrp = random.randint(0, grpNum - 1)
+    while index < number:
+        groups[addGrp].append(numbers[index])
+        index = index + 1
+        addGrp = addGrp + 1
+        addGrp = addGrp % grpNum
+
+    return groups
+
+
+
+def group_numbers(number, grpNum):
+    # Create a list of numbers from 1 to number
+    numbers = list(range(1, number+1))
+    # Shuffle the list randomly
+    random.shuffle(numbers)
+    # Calculate the size of each group
+    group_size = number // grpNum
+    # Create a list to hold the groups
+    groups = []
+    # Loop through the number of groupsimport random
+
+
+def group_numbers_avg(number, grpNum):
+    # Create a list of numbers from 1 to number
+    numbers = list(range(1, number+1))
+    # Shuffle the list randomly
+    random.shuffle(numbers)
+    # Calculate the size of each group
+    group_size = number // grpNum
+    # Create a list to hold the groups
+    groups = []
+    # Loop through the number of groups
+    for i in range(grpNum):
+        groups.append([])
+
+    index = 0
+    addGrp = random.randint(0, grpNum - 1)
+    while index < number:
+        groups[addGrp].append(numbers[index])
+        index = index + 1
+        addGrp = addGrp + 1
+        addGrp = addGrp % grpNum
+
+    return groups
+
+
+import sys
+from PyQt6.QtWidgets import QApplication, QWidget, QLabel, QLineEdit, QPushButton, QTableWidget, QTableWidgetItem, QHeaderView
+from PyQt6.QtGui import QFont, QPixmap
+
+
+# 继承了父类 QWidget。
+class Window(QWidget):
+    def __init__(self):
+        super().__init__()
+        # 在控件内获取应用对象
+        app = QApplication.instance()
+
+        # 设置应用的字体
+        font = QFont("Arial", 14)
+        app.setFont(font)
+
+        # 获取屏幕大小屏设置应用的窗体大小
+        screen = app.primaryScreen()
+        rect = screen.availableGeometry()
+        screenWidth, screenHeight = int(rect.width() / 100), int(rect.height() / 100)
+        self.setGeometry(screenWidth * 25, screenHeight *25, screenWidth *50, screenHeight *50)
+        appWith = int(screenWidth / 2)
+        appHeight = int(screenHeight / 2)
+
+        self.setWindowTitle('随机分组讨论')
+
+        # Create username label and input box
+        self.username_label = QLabel('人数:', self)
+        self.username_label.move(appWith * 5, appHeight *5)
+        self.username_label.setFixedSize(appWith * 8, appHeight * 5)
+        self.username_input = QLineEdit(self)
+        self.username_input.move(appWith * 15, appHeight *5)
+        self.username_input.setFixedSize(appWith * 5, appHeight * 5)
+        self.username_input.setText('20')
+
+        # Create password label and input box
+        self.password_label = QLabel('分组数:', self)
+        self.password_label.move(appWith * 5, appHeight *15)
+        self.password_label.setFixedSize(appWith * 8, appHeight * 5)
+        self.password_input = QLineEdit(self)
+        self.password_input.move(appWith * 15, appHeight *15)
+        self.password_input.setFixedSize(appWith * 5, appHeight *5)
+        self.password_input.setText('4')
+        # self.password_input.setEchoMode(QLineEdit.EchoMode.Password)
+
+        # Create login button
+        self.login_button = QPushButton('随机分组', self)
+        self.login_button.move(appWith * 5, appHeight *30)
+        self.login_button.setFixedSize(appWith * 15, appHeight *15)
+        self.login_button.clicked.connect(self.fenzu)
+
+        self.notice_label = QLabel('提示:分组数不合理', self)
+        self.notice_label.move(appWith * 5, appHeight * 50)
+        self.notice_label.setFixedSize(appWith * 15, appHeight * 30)
+        self.notice_label.setVisible(False)
+
+        self.res_table = QTableWidget(4, 3, self)
+        self.res_table.move(appWith * 30, appHeight *5)
+        font = QFont("Arial", 20)
+        self.res_table.setFont(font)
+        # self.res_table.resizeColumnsToContents()
+        self.res_table.setFixedSize(appWith * 70, appHeight *90)
+        # self.res_table.setColumnWidth(0, 50)
+        # self.res_table.setColumnWidth(1, 150)
+        self.res_table.verticalHeader().setVisible(False)
+        # self.res_table.setStyleSheet("QHeaderView::section { border: none; background-color: white; }"
+        #                                 "QTableCornerButton::section { border: none; background-color: white; }"
+        #                                 "QHeaderView::section:first { border-top: none; }"
+        #                                 "QTableCornerButton::section:first { border-top: none; }"
+        #                                 "QHeaderView { border-bottom: none; }"
+        #                                 "QTableCornerButton { border-bottom: none; }"
+        #                                 "QHeaderView::section { color: black; font-weight: bold; height: 30px; }"
+        #                                 "QHeaderView::section:first { border-left: none; }"
+        #                                 "QTableCornerButton::section:first { border-left: none; }"
+        #                                 "QHeaderView::section:last { border-right: none; }"
+        #                                 "QTableCornerButton::section:last { border-right: none; }"
+        #                                 "QHeaderView { orientation: Qt::Horizontal; }"
+        #                                 "QTableCornerButton { background-color: white; border-top: none; }")
+        # 设置表格的列名
+        header_font = self.res_table.horizontalHeader().font()
+        header_font.setPointSize(25)
+        self.res_table.horizontalHeader().setFont(header_font)
+        self.res_table.setHorizontalHeaderLabels(["组号", "组长", "组员"])
+
+    #
+    def fenzu(self):
+        # Check if username and password are correct
+        usernumtext = self.username_input.text()
+        grpnumtext = self.password_input.text()
+        if usernumtext == '':
+           usernumtext = '15'
+        if grpnumtext == '':
+           grpnumtext = '4'
+        usernum = int(usernumtext)
+        grpnum = int(grpnumtext)
+
+        if usernum < grpnum:
+            self.notice_label.setVisible(True)
+            grpnum = usernum
+        groupres = group_numbers_avg(usernum, grpnum)
+        # print(groupres)
+
+        # # 填充表格内容
+        self.res_table.setRowCount(grpnum)
+        for index, onegroup in enumerate(groupres):
+            print(onegroup)
+            # item = QTableWidgetItem(str(index + 1))
+            # item.setFont(QFont("Arial", 12, QFont.Bold))
+            # self.res_table.setItem(index, 0, item)
+
+            self.res_table.setItem(index, 0, QTableWidgetItem('第' + str(index + 1) + '组'))
+            self.res_table.setItem(index, 1, QTableWidgetItem(str(onegroup[0])))
+            del onegroup[0]
+            self.res_table.setItem(index, 2, QTableWidgetItem(str(onegroup)))
+
+        self.res_table.resizeColumnsToContents()
+        # self.res_table.horizontalHeader().setSectionResizeMode(QHeaderView.ResizeToContents)
+
+    def wheelEvent(self, event):
+        font = self.res_table.font()
+        size = font.pointSize()
+        if event.angleDelta().y() > 0:
+            size += 1
+        else:
+            size -= 1
+        font.setPointSize(size)
+        self.res_table.setFont(font)
+        self.res_table.resizeColumnsToContents()
+        self.res_table.resizeRowsToContents()
+
+    def resizeEvent(self, event):
+        # print('Resized')
+        # print(self.size())
+        self.res_table.setFixedSize(int(self.size().width() * 0.7), int(self.size().height() * 0.9))
+
+if __name__ == '__main__':
+    app = QApplication(sys.argv)
+    window = Window()
+    window.show()
+    sys.exit(app.exec())
+    for i in range(grpNum):
+        # Calculate the start and end index of the group
+        start = i * group_size
+        end = (i+1) * group_size
+        # If this is the last group, include any remaining numbers
+        if i == grpNum-1:
+            end = number
+        # Add the group to the list of groups
+        groups.append(numbers[start:end])
+    return groups
+
+def group(n, m):
+    return [list(range(1 + i * n // m, 1 + (i + 1) * n // m)) for i in range(m)]
+
+
+
+if __name__ == '__main__':
+    groups = group_numbers_avg(25, 4)
+    print(groups)
