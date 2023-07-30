@@ -1,0 +1,50 @@
+from collections import deque
+from typing import *
+import unittest
+
+###################################################
+#暴力解法：
+#将数组两个组合，求出面积取最大值
+###################################################
+
+
+###################################################
+#双指针：
+#在每个状态下，无论长板或短板向中间收窄一格，都会导致水槽 底边宽度 −1  变短：
+#   若向内移动短板，水槽的短板可能变大，因此下个水槽的面积 可能增大 。
+#   若向内移动长板，水槽的短板不变或变小，因此下个水槽的面积 一定变小
+#   因此，初始化双指针分列水槽左右两端，循环每轮将短板向内移动一格，并更新面积最大值，直到两指针相遇时跳出；即可获得最大面积。
+
+# 双指针相等的情况下，移动不同的值是否有可能错过最大面积？
+# i, j 两端高度相同时，如果它们中间如果存在更大的面积，构成这个更大面积的两端 p, q 必然和 i, j 无关。(i < p < q< j) 因为这个更大的面积宽度更小，需要更大的高度。 所以不会错过最大面积。
+###################################################
+class Solution:
+    def maxArea(self, height: List[int]) -> int:
+        leftPoint, rightPoint, maxAreaTemp = 0, len(height) - 1, 0
+        while (leftPoint < rightPoint):
+            leftVal = height[leftPoint]
+            rightVal = height[rightPoint]
+            maxAreaTemp = max(maxAreaTemp, min(leftVal, rightVal) * (rightPoint - leftPoint))
+            if (leftVal <= rightVal):
+                leftPoint += 1
+            else:
+                rightPoint -= 1
+        return maxAreaTemp
+
+
+# -----------单元测试-----------------------------------
+class TestSolution(unittest.TestCase):
+    def test_1(self):
+        solution = Solution()
+        height = [1,8,6,2,5,4,8,3,7]
+        res = Solution.maxArea(solution, height)
+        self.assertEqual(res, 49)
+
+    def test_2(self):
+        solution = Solution()
+        height = [1,1]
+        res = Solution.maxArea(solution, height)
+        self.assertEqual(res, 1)
+
+if __name__ == '__main__':
+    unittest.main()
